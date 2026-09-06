@@ -38,10 +38,14 @@ header {
   border-bottom: 1px solid var(--border);
   background: var(--card);
 }
-.logo-img {
-  height: 60px;
-  width: auto;
+.logo-text {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
+.logo-text .hitro { color: var(--brand-orange); }
+.logo-text .tech { color: var(--brand-blue); }
 .logo-suffix {
   font-size: 14px;
   color: var(--muted);
@@ -53,7 +57,7 @@ header {
 
 @media (max-width: 480px) {
   header { padding: 14px 18px; }
-  .logo-img { height: 46px; }
+  .logo-text { font-size: 22px; }
 }
 
 /* ---------- Hero ---------- */
