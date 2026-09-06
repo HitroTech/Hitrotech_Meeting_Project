@@ -70,34 +70,21 @@ joinBtn.addEventListener('click', () => {
   });
 });
 
+// NOTE: We intentionally do NOT embed meet.jit.si via the iframe/External API.
+// Jitsi explicitly disconnects embedded calls after 5 minutes ("embedding
+// meet.jit.si is only meant for demo purposes"). Instead, we hand off to
+// meet.jit.si directly (full navigation, not an iframe), which has no such
+// restriction. The HitroTech branding lives on this landing page; the call
+// itself runs on Jitsi's own site.
 function startMeeting(room, name) {
   joinBtn.disabled = true;
-  joinBtnText.textContent = 'Connecting…';
+  joinBtnText.textContent = 'Redirecting to your meeting…';
 
-  document.getElementById('landing-page').style.display = 'none';
-  document.getElementById('meet-container').style.display = 'block';
+  const roomId = 'HitroTechMeet-' + room;
+  const jitsiUrl =
+    'https://meet.jit.si/' +
+    encodeURIComponent(roomId) +
+    '#userInfo.displayName=%22' + encodeURIComponent(name) + '%22';
 
-  const domain = 'meet.jit.si';
-  const options = {
-    roomName: 'HitroTechMeet-' + room,
-    width: '100%',
-    height: '100%',
-    parentNode: document.getElementById('jitsi-frame-wrapper'),
-    userInfo: { displayName: name },
-    configOverwrite: {
-      prejoinPageEnabled: true,
-    },
-    interfaceConfigOverwrite: {
-      SHOW_JITSI_WATERMARK: false,
-      SHOW_WATERMARK_FOR_GUESTS: false,
-      DEFAULT_BACKGROUND: '#0b0e17',
-      APP_NAME: 'HitroTech Meet',
-    },
-  };
-
-  const api = new JitsiMeetExternalAPI(domain, options);
-
-  api.addEventListener('readyToClose', () => {
-    window.location.reload();
-  });
+  window.location.href = jitsiUrl;
 }

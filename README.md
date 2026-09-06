@@ -24,8 +24,16 @@ meeting_project/
 
 1. User enters a **room name** and their **display name** on the landing page.
 2. Both fields are validated client-side (required, length limits, allowed characters).
-3. On submit, the page embeds a Jitsi Meet call (via `meet.jit.si`) scoped to a room named `HitroTechMeet-<room>`, so it doesn't collide with unrelated public rooms.
+3. On submit, the browser is **redirected to `meet.jit.si`** with a room scoped to `HitroTechMeet-<room>`, so it doesn't collide with unrelated public rooms.
 4. No backend, database, or account system — Jitsi's public infrastructure handles the actual video/audio.
+
+### Why a redirect instead of an embedded iframe?
+
+Jitsi's public server explicitly disconnects **embedded** calls (via its iframe/External API) after 5 minutes, with the message *"Embedding meet.jit.si is only meant for demo purposes."* That restriction does not apply to a normal full-page redirect, so this app hands off to `meet.jit.si` directly instead of embedding it. The trade-off: HitroTech branding is visible on the landing/launch page, but the call itself runs on Jitsi's own site.
+
+**If persistent in-call branding is needed later**, the options are:
+- **Jitsi as a Service (JaaS)** — 8x8's hosted product, built for embedding with your own branding; free tier available (~10,000 participant-minutes/month), needs an 8x8 account + API setup.
+- **Self-hosting Jitsi** — full control (own branding, no limits), needs a VPS (e.g. Oracle Cloud's Always Free tier).
 
 ## Run Locally
 
