@@ -1,3 +1,12 @@
+/* ---------- Typeface (self-hosted, no CDN) ---------- */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("assets/fonts/space-grotesk-latin-var.woff2") format("woff2");
+}
+
 :root {
   color-scheme: dark;
 
@@ -6,11 +15,13 @@
   --brand-red-dark: #C22B3E;
   --brand-orange: #F0913F;
   --brand-gradient: linear-gradient(135deg, #E23B4F 0%, #F0913F 100%);
+  /* CTA gradient ends darker so the white label clears 3:1 across the button */
+  --brand-gradient-cta: linear-gradient(135deg, #E23B4F 0%, #D97A2B 100%);
   --brand-glow: rgba(226, 59, 79, 0.35);
 
-  /* Feedback */
-  --danger: #FF6B7A;
-  --danger-glow: rgba(255, 107, 122, 0.15);
+  /* Feedback — amber, so an error never reads as the brand red */
+  --danger: #FBBF24;
+  --danger-glow: rgba(251, 191, 36, 0.15);
 
   /* Surfaces */
   --bg: #000000;
@@ -19,29 +30,75 @@
   --text: #FFFFFF;
   --muted: #A1A1AA;
   --border: #262626;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+
+  /* Motion */
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 450ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
+
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Shared container: one axis for every block ---------- */
+.container {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 40px);
+}
+
+#landing-page {
   min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-8);
+  padding-block: var(--space-8);
 }
 
 /* ---------- Header ---------- */
 header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 14px;
-  padding: 16px 28px;
+  padding-block: var(--space-4);
   border-bottom: 1px solid var(--border);
   background: var(--card);
 }
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-3);
+}
 .logo-text {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--brand-orange); /* fallback where background-clip: text is unsupported */
@@ -60,122 +117,176 @@ header {
   font-size: 14px;
   color: var(--muted);
   font-weight: 600;
-  margin-left: 2px;
-  padding-left: 14px;
+  padding-left: var(--space-3);
   border-left: 1px solid var(--border);
+  line-height: 1;
 }
 
-@media (max-width: 480px) {
-  header { padding: 14px 18px; }
-  .logo-text { font-size: 22px; }
+/* ---------- Stage (hero + form) ---------- */
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
 }
-
-/* ---------- Hero ---------- */
-#landing-page { padding: 40px 20px 60px; }
 
 .hero {
-  max-width: 920px;
-  margin: 0 auto 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: var(--space-7);
   flex-wrap: wrap;
   text-align: left;
+  max-width: 920px;
 }
 .hero-text { flex: 1 1 380px; max-width: 460px; }
 .hero-text h1 {
-  font-size: clamp(26px, 4vw, 36px);
-  line-height: 1.2;
-  margin: 0 0 12px;
+  font-size: clamp(30px, 4.2vw, 44px);
+  line-height: 1.15;
+  font-weight: 700;
+  margin: 0 0 var(--space-3);
   letter-spacing: -0.02em;
 }
 .hero-text h1 span { color: var(--brand-red); }
 .hero-text p {
   color: var(--muted);
-  font-size: 15.5px;
+  font-size: 16px;
   line-height: 1.6;
   margin: 0;
+  max-width: 46ch;
 }
 .hero-illustration { flex: 0 0 320px; max-width: 100%; }
-.hero-illustration svg { width: 100%; height: auto; }
+.hero-illustration svg { width: 100%; height: auto; display: block; }
 
-@media (max-width: 720px) {
-  .hero { text-align: center; justify-content: center; }
-  .hero-illustration { order: -1; flex-basis: 220px; }
-}
-
-/* ---------- Form card ---------- */
-#landing {
+/* ---------- Form column ---------- */
+.form-col {
+  position: relative;
+  width: 100%;
   max-width: 420px;
-  margin: 0 auto;
+}
+.card-glow {
+  position: absolute;
+  inset: -20% -14%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(226, 59, 79, 0.10), transparent 70%);
+  will-change: transform;
+}
+#landing {
+  position: relative;
+  z-index: 1;
   background: var(--card);
-  padding: 30px;
+  padding: var(--space-6);
   border-radius: 20px;
   border: 1px solid var(--border);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
-.field { margin-bottom: 16px; }
+
+.field { margin-bottom: var(--space-4); }
 #landing label {
   display: block;
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
+  transition: color var(--dur-base) var(--ease-out);
 }
+.field:focus-within label { color: var(--text); }
+
 #landing input {
   width: 100%;
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-4);
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--svg-panel);
   color: var(--text);
+  font-family: inherit;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out);
 }
 #landing input::placeholder { color: var(--muted); }
 #landing input:focus {
   border-color: var(--brand-red);
-  box-shadow: 0 0 0 3px var(--brand-glow);
+  box-shadow: 0 0 0 3px var(--brand-glow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 #landing input.invalid {
   border-color: var(--danger);
   box-shadow: 0 0 0 3px var(--danger-glow);
+  animation: shake 350ms var(--ease-in-out);
 }
 .error-msg {
   display: block;
   min-height: 16px;
   color: var(--danger);
   font-size: 12.5px;
-  margin-top: 5px;
+  line-height: 1.3;
+  margin-top: var(--space-1);
+}
+.error-msg:not(:empty) {
+  animation: error-in var(--dur-base) var(--ease-out) backwards;
 }
 
+/* ---------- Primary CTA ---------- */
 #joinBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
   width: 100%;
-  padding: 13px;
+  padding: var(--space-4);
   border: none;
   border-radius: 999px;
-  background: var(--brand-gradient);
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
+  background-image: var(--brand-gradient-cta);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  color: #fff;
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: transform 0.12s, box-shadow 0.12s, opacity 0.15s;
-  margin-top: 4px;
+  margin-top: var(--space-1);
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out),
+              background-position var(--dur-slow) var(--ease-out),
+              opacity var(--dur-fast) linear;
 }
-#joinBtn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--brand-glow); }
-#joinBtn:active { transform: translateY(0); }
+#joinBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-position: 100% 50%;
+  box-shadow: 0 10px 28px var(--brand-glow);
+}
+#joinBtn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
 #joinBtn:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--brand-glow);
 }
-#joinBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+#joinBtn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none;
+  animation: shimmer 2.4s var(--ease-in-out) infinite alternate;
+}
+/* Inline flex item rather than an absolute overlay, so the spinner can
+   never collide with a long label at narrow widths. */
+#joinBtn:disabled::after {
+  content: "";
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
 
 #landing p.hint {
   color: var(--muted);
   font-size: 12.5px;
-  margin: 14px 0 0;
+  line-height: 1.5;
+  margin: var(--space-4) 0 0;
   text-align: center;
 }
 
@@ -183,24 +294,179 @@ header {
 .badges {
   display: flex;
   justify-content: center;
-  gap: 22px;
-  margin-top: 30px;
+  gap: var(--space-6);
   flex-wrap: wrap;
 }
 .badge {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12.5px;
+  gap: var(--space-2);
+  font-size: 13px;
   color: var(--muted);
   font-weight: 500;
+  transition: transform var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out);
 }
-.badge svg { width: 20px; height: 20px; }
+.badge:hover { transform: translateY(-2px); color: var(--text); }
+.badge svg {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.badge:hover svg { opacity: 1; }
 
+/* ---------- Footer ---------- */
 footer {
-  text-align: center;
-  padding: 26px 20px;
+  padding-block: var(--space-5);
   color: var(--muted);
   font-size: 12.5px;
+  text-align: center;
 }
-footer a { color: var(--brand-orange); text-decoration: none; font-weight: 600; }
+footer a {
+  position: relative;
+  color: var(--brand-orange);
+  text-decoration: none;
+  font-weight: 600;
+}
+footer a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+footer a:hover::after,
+footer a:focus-visible::after { transform: scaleX(1); }
+
+/* ---------- Breakpoints ---------- */
+@media (min-width: 1024px) {
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
+    gap: clamp(48px, 6vw, 88px);
+    align-items: center;
+  }
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--space-6);
+    max-width: 560px;
+  }
+  .hero-text { flex: 0 0 auto; max-width: 100%; }
+  .hero-illustration { flex: 0 0 auto; width: 300px; }
+  .form-col { max-width: none; }
+  /* Badges keep their DOM position but sit on the container axis,
+     under the hero column, instead of floating on the viewport centre. */
+  .badges { justify-content: flex-start; max-width: 560px; }
+}
+
+/* Below the split breakpoint every block centres on the same container
+   axis, so the heading never sits left of a centred card. */
+@media (max-width: 1023px) {
+  .stage { gap: var(--space-7); }
+  .page-main { gap: var(--space-7); padding-block: var(--space-7); }
+  .hero { text-align: center; justify-content: center; }
+  .hero-text p { margin-inline: auto; }
+}
+
+@media (max-width: 720px) {
+  .hero-illustration { order: -1; flex-basis: 220px; }
+}
+
+@media (max-width: 480px) {
+  .logo-text { font-size: 22px; }
+  #landing { padding: var(--space-5); }
+  .badges { gap: var(--space-4); }
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rise-card {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+@keyframes drift {
+  from { transform: translate3d(-2%, -2%, 0) scale(1); }
+  to   { transform: translate3d(2%, 3%, 0) scale(1.08); }
+}
+@keyframes error-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shimmer {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
+/* ---------- Entrance choreography ----------
+   fill-mode: backwards holds the "from" state during the delay, then hands
+   the element back to its own styles once finished, so hover transforms on
+   .badge are not frozen by a lingering animation fill. */
+header,
+.hero-text h1,
+.hero-text p,
+.hero-illustration,
+.form-col,
+.badge,
+footer {
+  animation: rise var(--dur-slow) var(--ease-out) backwards;
+}
+header              { animation-delay: 0ms; }
+.hero-text h1       { animation-delay: 70ms; }
+.hero-text p        { animation-delay: 140ms; }
+.hero-illustration  { animation-name: pop-in;    animation-delay: 210ms; }
+.form-col           { animation-name: rise-card; animation-delay: 280ms; }
+.badge:nth-child(1) { animation-delay: 350ms; }
+.badge:nth-child(2) { animation-delay: 410ms; }
+.badge:nth-child(3) { animation-delay: 470ms; }
+footer              { animation-delay: 420ms; }
+
+/* ---------- Ambient loops ---------- */
+.float-wrap {
+  animation: float 6s var(--ease-in-out) infinite;
+  will-change: transform;
+}
+.dot { animation: pulse 4s var(--ease-in-out) infinite; }
+.dot-b { animation-duration: 5.5s; animation-delay: -2s; }
+.card-glow { animation: drift 14s var(--ease-in-out) infinite alternate; }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
