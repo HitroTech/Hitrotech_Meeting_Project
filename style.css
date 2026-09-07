@@ -7,29 +7,35 @@
   src: url("assets/fonts/space-grotesk-latin-var.woff2") format("woff2");
 }
 
+/* Light is the default theme; [data-theme="dark"] below overrides the colour
+   tokens only. Brand hues are re-tuned per theme because #F0913F as text on
+   white is 2.39:1 — unreadable — while it is 8.83:1 on black. */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
   /* Brand */
   --brand-red: #E23B4F;
   --brand-red-dark: #C22B3E;
   --brand-orange: #F0913F;
-  --brand-gradient: linear-gradient(135deg, #E23B4F 0%, #F0913F 100%);
+  --brand-gradient: linear-gradient(135deg, #D42F45 0%, #D97A2B 100%);
   /* CTA gradient ends darker so the white label clears 3:1 across the button */
   --brand-gradient-cta: linear-gradient(135deg, #E23B4F 0%, #D97A2B 100%);
-  --brand-glow: rgba(226, 59, 79, 0.35);
+  --brand-glow: rgba(226, 59, 79, 0.28);
+  --brand-link: #C22B3E;   /* brand colour that still passes AA as body text */
 
-  /* Feedback — amber, so an error never reads as the brand red */
-  --danger: #FBBF24;
-  --danger-glow: rgba(251, 191, 36, 0.15);
+  /* Feedback — amber family, so an error never reads as the brand red */
+  --danger: #B45309;
+  --danger-glow: rgba(180, 83, 9, 0.14);
 
   /* Surfaces */
-  --bg: #000000;
-  --card: #0F0F0F;
-  --svg-panel: #161616;
-  --text: #FFFFFF;
-  --muted: #A1A1AA;
-  --border: #262626;
+  --bg: #FFFFFF;
+  --card: #FFFFFF;
+  --svg-panel: #F4F4F5;
+  --text: #0A0A0A;
+  --muted: #52525B;
+  --border: #E4E4E7;
+  --shadow-card: 0 8px 30px rgba(16, 24, 40, 0.08);
+  --glow-color: rgba(226, 59, 79, 0.05);
 
   /* Spacing scale */
   --space-1: 4px;
@@ -49,6 +55,26 @@
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --brand-gradient: linear-gradient(135deg, #E23B4F 0%, #F0913F 100%);
+  --brand-glow: rgba(226, 59, 79, 0.35);
+  --brand-link: #F0913F;
+
+  --danger: #FBBF24;
+  --danger-glow: rgba(251, 191, 36, 0.15);
+
+  --bg: #000000;
+  --card: #0F0F0F;
+  --svg-panel: #161616;
+  --text: #FFFFFF;
+  --muted: #A1A1AA;
+  --border: #262626;
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --glow-color: rgba(226, 59, 79, 0.10);
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -58,6 +84,8 @@ body {
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out);
 }
 
 /* ---------- Shared container: one axis for every block ---------- */
@@ -101,7 +129,7 @@ header {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--brand-orange); /* fallback where background-clip: text is unsupported */
+  color: var(--brand-link); /* fallback where background-clip: text is unsupported */
 }
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .logo-text {
@@ -121,6 +149,38 @@ header {
   border-left: 1px solid var(--border);
   line-height: 1;
 }
+
+/* ---------- Theme toggle ---------- */
+.theme-toggle {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--muted);
+  transform: translateY(-1px);
+}
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
 
 /* ---------- Stage (hero + form) ---------- */
 .stage {
@@ -169,7 +229,7 @@ header {
   inset: -20% -14%;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, rgba(226, 59, 79, 0.10), transparent 70%);
+  background: radial-gradient(circle at 50% 50%, var(--glow-color), transparent 70%);
   will-change: transform;
 }
 #landing {
@@ -179,7 +239,7 @@ header {
   padding: var(--space-6);
   border-radius: 20px;
   border: 1px solid var(--border);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow-card);
 }
 
 .field { margin-bottom: var(--space-4); }
@@ -326,7 +386,7 @@ footer {
 }
 footer a {
   position: relative;
-  color: var(--brand-orange);
+  color: var(--brand-link);
   text-decoration: none;
   font-weight: 600;
 }
