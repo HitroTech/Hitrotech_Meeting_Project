@@ -6,6 +6,7 @@ const roomError = document.getElementById('roomNameError');
 const nameError = document.getElementById('displayNameError');
 const joinBtn = document.getElementById('joinBtn');
 const joinBtnText = document.getElementById('joinBtnText');
+const JOIN_LABEL = joinBtnText.textContent;
 
 const ROOM_PATTERN = /^[a-zA-Z0-9-]+$/;
 const NAME_PATTERN = /^[a-zA-Z\s'.-]+$/;
@@ -70,21 +71,46 @@ joinBtn.addEventListener('click', () => {
   });
 });
 
+// Coming back from the meeting restores this page from the back/forward cache
+// with the DOM exactly as we left it — button disabled, label still saying
+// "Redirecting…". Reset it so the user can start another meeting immediately.
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    joinBtn.disabled = false;
+    joinBtnText.textContent = JOIN_LABEL;
+  }
+});
+
 // NOTE: We intentionally do NOT embed meet.jit.si via the iframe/External API.
 // Jitsi explicitly disconnects embedded calls after 5 minutes ("embedding
 // meet.jit.si is only meant for demo purposes"). Instead, we hand off to
 // meet.jit.si directly (full navigation, not an iframe), which has no such
 // restriction. The HitroTech branding lives on this landing page; the call
 // itself runs on Jitsi's own site.
+//
+// meet.jit.si only honours a whitelist of URL overrides. config.subject is
+// accepted (verified against the live server); the interfaceConfig.* branding
+// keys are ignored, so the Jitsi watermark cannot be removed from the public
+// server — that needs JaaS or a self-hosted instance.
+function quoted(value) {
+  return '%22' + encodeURIComponent(value) + '%22';
+}
+
 function startMeeting(room, name) {
   joinBtn.disabled = true;
   joinBtnText.textContent = 'Redirecting to your meeting…';
 
+  // The room ID keeps its prefix so it cannot collide with unrelated public
+  // rooms, but Jitsi renders that slug in the meeting header. Send a clean
+  // subject alongside it so the call shows a readable name instead.
   const roomId = 'HitroTechMeet-' + room;
-  const jitsiUrl =
-    'https://meet.jit.si/' +
-    encodeURIComponent(roomId) +
-    '#userInfo.displayName=%22' + encodeURIComponent(name) + '%22';
+  const subject = 'HitroTech · ' + room.replace(/-/g, ' ');
 
-  window.location.href = jitsiUrl;
+  const params = [
+    'userInfo.displayName=' + quoted(name),
+    'config.subject=' + quoted(subject)
+  ];
+
+  window.location.href =
+    'https://meet.jit.si/' + encodeURIComponent(roomId) + '#' + params.join('&');
 }
