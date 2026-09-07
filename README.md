@@ -11,6 +11,7 @@ A lightweight, branded video conferencing page for HitroTech — start or join a
 ## Project Structure
 
 ```
+
 meeting_project/
 ├── index.html      # page structure
 ├── style.css       # all styling (light/dark aware)
