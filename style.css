@@ -1,23 +1,24 @@
 :root {
-  --brand-blue: #1c78c4;
-  --brand-blue-dark: #145a94;
-  --brand-orange: #f7931e;
-  --bg: #f5f8fc;
-  --card: #ffffff;
-  --svg-panel: #eef4fb;
-  --text: #12172a;
-  --muted: #5b6478;
-  --border: #e3e8f2;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b0e17;
-    --card: #131826;
-    --svg-panel: #182234;
-    --text: #eef1f7;
-    --muted: #9aa3b8;
-    --border: #232a3d;
-  }
+  color-scheme: dark;
+
+  /* Brand */
+  --brand-red: #E23B4F;
+  --brand-red-dark: #C22B3E;
+  --brand-orange: #F0913F;
+  --brand-gradient: linear-gradient(135deg, #E23B4F 0%, #F0913F 100%);
+  --brand-glow: rgba(226, 59, 79, 0.35);
+
+  /* Feedback */
+  --danger: #FF6B7A;
+  --danger-glow: rgba(255, 107, 122, 0.15);
+
+  /* Surfaces */
+  --bg: #000000;
+  --card: #0F0F0F;
+  --svg-panel: #161616;
+  --text: #FFFFFF;
+  --muted: #A1A1AA;
+  --border: #262626;
 }
 * { box-sizing: border-box; }
 body {
@@ -43,9 +44,18 @@ header {
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
+  color: var(--brand-orange); /* fallback where background-clip: text is unsupported */
 }
-.logo-text .hitro { color: var(--brand-orange); }
-.logo-text .tech { color: var(--brand-blue); }
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .logo-text {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+.logo-text .hitro,
+.logo-text .tech { color: inherit; }
 .logo-suffix {
   font-size: 14px;
   color: var(--muted);
@@ -80,7 +90,7 @@ header {
   margin: 0 0 12px;
   letter-spacing: -0.02em;
 }
-.hero-text h1 span { color: var(--brand-blue); }
+.hero-text h1 span { color: var(--brand-red); }
 .hero-text p {
   color: var(--muted);
   font-size: 15.5px;
@@ -101,9 +111,9 @@ header {
   margin: 0 auto;
   background: var(--card);
   padding: 30px;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid var(--border);
-  box-shadow: 0 10px 30px rgba(20, 40, 100, 0.06);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
 .field { margin-bottom: 16px; }
 #landing label {
@@ -116,26 +126,27 @@ header {
 #landing input {
   width: 100%;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--svg-panel);
   color: var(--text);
   font-size: 15px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
+#landing input::placeholder { color: var(--muted); }
 #landing input:focus {
-  border-color: var(--brand-blue);
-  box-shadow: 0 0 0 3px rgba(28, 120, 196, 0.15);
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px var(--brand-glow);
 }
 #landing input.invalid {
-  border-color: #e0524d;
-  box-shadow: 0 0 0 3px rgba(224, 82, 77, 0.12);
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-glow);
 }
 .error-msg {
   display: block;
   min-height: 16px;
-  color: #e0524d;
+  color: var(--danger);
   font-size: 12.5px;
   margin-top: 5px;
 }
@@ -144,8 +155,8 @@ header {
   width: 100%;
   padding: 13px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-dark));
+  border-radius: 999px;
+  background: var(--brand-gradient);
   color: white;
   font-size: 15px;
   font-weight: 600;
@@ -153,9 +164,13 @@ header {
   transition: transform 0.12s, box-shadow 0.12s, opacity 0.15s;
   margin-top: 4px;
 }
-#joinBtn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(28,120,196,0.25); }
+#joinBtn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--brand-glow); }
 #joinBtn:active { transform: translateY(0); }
-#joinBtn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+#joinBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--brand-glow);
+}
+#joinBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 #landing p.hint {
   color: var(--muted);
@@ -188,4 +203,4 @@ footer {
   color: var(--muted);
   font-size: 12.5px;
 }
-footer a { color: var(--brand-blue); text-decoration: none; font-weight: 600; }
+footer a { color: var(--brand-orange); text-decoration: none; font-weight: 600; }
