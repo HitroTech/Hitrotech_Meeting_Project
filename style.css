@@ -20,6 +20,9 @@
   --brand-gradient: linear-gradient(135deg, #D42F45 0%, #D97A2B 100%);
   /* CTA gradient ends darker so the white label clears 3:1 across the button */
   --brand-gradient-cta: linear-gradient(135deg, #E23B4F 0%, #D97A2B 100%);
+  /* Hero panel keeps the full brand gradient in both themes. The angle and the
+     mid stop hold the red side under the text; orange lands bottom-right. */
+  --brand-gradient-panel: linear-gradient(145deg, #E23B4F 0%, #EC6A3E 55%, #F0913F 100%);
   --brand-glow: rgba(226, 59, 79, 0.28);
   --brand-link: #C22B3E;   /* brand colour that still passes AA as body text */
 
@@ -182,41 +185,107 @@ header {
 [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
 
-/* ---------- Stage (hero + form) ---------- */
+/* ---------- Stage (gradient panel + form) ---------- */
 .stage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-7);
 }
 
+/* ---------- Gradient hero panel ---------- */
 .hero {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-7);
-  flex-wrap: wrap;
-  text-align: left;
-  max-width: 920px;
+  position: relative;
+  width: 100%;
+  padding: var(--space-8) var(--space-7);
+  border-radius: 20px;
+  background-image: var(--brand-gradient-panel);
+  color: #fff;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
-.hero-text { flex: 1 1 380px; max-width: 460px; }
+/* Dot texture, matching the reference panel */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: 14px 14px;
+  pointer-events: none;
+}
+.hero > * { position: relative; }
+
+.hero-text { max-width: 46ch; }
 .hero-text h1 {
-  font-size: clamp(30px, 4.2vw, 44px);
-  line-height: 1.15;
+  font-size: clamp(28px, 3.2vw, 40px);
+  line-height: 1.12;
   font-weight: 700;
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
   letter-spacing: -0.02em;
+  color: #fff;
 }
-.hero-text h1 span { color: var(--brand-red); }
+.hero-text h1 span { color: inherit; }
 .hero-text p {
-  color: var(--muted);
   font-size: 16px;
   line-height: 1.6;
   margin: 0;
-  max-width: 46ch;
+  color: rgba(255, 255, 255, 0.92);
 }
-.hero-illustration { flex: 0 0 320px; max-width: 100%; }
-.hero-illustration svg { width: 100%; height: auto; display: block; }
+
+.hero-points {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.hero-points li {
+  position: relative;
+  padding-left: var(--space-5);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.95);
+}
+.hero-points li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--space-7);
+  padding-top: var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: var(--space-4);
+}
+.stat + .stat {
+  padding-left: var(--space-5);
+  border-left: 1px solid rgba(255, 255, 255, 0.24);
+}
+.stat strong {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.stat span {
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
 
 /* ---------- Form column ---------- */
 .form-col {
@@ -350,33 +419,6 @@ header {
   text-align: center;
 }
 
-/* ---------- Feature badges ---------- */
-.badges {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-6);
-  flex-wrap: wrap;
-}
-.badge {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 500;
-  transition: transform var(--dur-base) var(--ease-out),
-              color var(--dur-base) var(--ease-out);
-}
-.badge:hover { transform: translateY(-2px); color: var(--text); }
-.badge svg {
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
-  opacity: 0.8;
-  transition: opacity var(--dur-base) var(--ease-out);
-}
-.badge:hover svg { opacity: 1; }
-
 /* ---------- Footer ---------- */
 footer {
   padding-block: var(--space-5);
@@ -409,42 +451,32 @@ footer a:focus-visible::after { transform: scaleX(1); }
 @media (min-width: 1024px) {
   .stage {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
-    gap: clamp(48px, 6vw, 88px);
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 400px);
+    gap: clamp(32px, 4vw, 60px);
     align-items: center;
   }
-  .hero {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: var(--space-6);
-    max-width: 560px;
-  }
-  .hero-text { flex: 0 0 auto; max-width: 100%; }
-  .hero-illustration { flex: 0 0 auto; width: 300px; }
   .form-col { max-width: none; }
-  /* Badges keep their DOM position but sit on the container axis,
-     under the hero column, instead of floating on the viewport centre. */
-  .badges { justify-content: flex-start; max-width: 560px; }
 }
 
-/* Below the split breakpoint every block centres on the same container
-   axis, so the heading never sits left of a centred card. */
 @media (max-width: 1023px) {
-  .stage { gap: var(--space-7); }
   .page-main { gap: var(--space-7); padding-block: var(--space-7); }
-  .hero { text-align: center; justify-content: center; }
-  .hero-text p { margin-inline: auto; }
+  .hero { padding: var(--space-7) var(--space-6); }
 }
 
-@media (max-width: 720px) {
-  .hero-illustration { order: -1; flex-basis: 220px; }
+/* Stats stay in three columns even on the narrowest screens — the labels are
+   short enough to wrap, which is how the reference panel behaves too. */
+@media (max-width: 560px) {
+  .hero { padding: var(--space-6) var(--space-5); }
+  .hero-stats { margin-top: var(--space-6); padding-top: var(--space-5); }
+  .stat { padding-right: var(--space-2); }
+  .stat + .stat { padding-left: var(--space-3); }
+  .stat strong { font-size: 18px; }
+  .stat span { font-size: 10px; letter-spacing: 0.06em; }
 }
 
 @media (max-width: 480px) {
   .logo-text { font-size: 22px; }
   #landing { padding: var(--space-5); }
-  .badges { gap: var(--space-4); }
 }
 
 /* ---------- Keyframes ---------- */
@@ -455,18 +487,6 @@ footer a:focus-visible::after { transform: scaleX(1); }
 @keyframes rise-card {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: none; }
-}
-@keyframes pop-in {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.35; }
 }
 @keyframes drift {
   from { transform: translate3d(-2%, -2%, 0) scale(1); }
@@ -490,34 +510,20 @@ footer a:focus-visible::after { transform: scaleX(1); }
 
 /* ---------- Entrance choreography ----------
    fill-mode: backwards holds the "from" state during the delay, then hands
-   the element back to its own styles once finished, so hover transforms on
-   .badge are not frozen by a lingering animation fill. */
+   the element back to its own styles once finished, so hover transforms are
+   not frozen by a lingering animation fill. */
 header,
-.hero-text h1,
-.hero-text p,
-.hero-illustration,
+.hero,
 .form-col,
-.badge,
 footer {
   animation: rise var(--dur-slow) var(--ease-out) backwards;
 }
-header              { animation-delay: 0ms; }
-.hero-text h1       { animation-delay: 70ms; }
-.hero-text p        { animation-delay: 140ms; }
-.hero-illustration  { animation-name: pop-in;    animation-delay: 210ms; }
-.form-col           { animation-name: rise-card; animation-delay: 280ms; }
-.badge:nth-child(1) { animation-delay: 350ms; }
-.badge:nth-child(2) { animation-delay: 410ms; }
-.badge:nth-child(3) { animation-delay: 470ms; }
-footer              { animation-delay: 420ms; }
+header    { animation-delay: 0ms; }
+.hero     { animation-name: rise-card; animation-delay: 80ms; }
+.form-col { animation-name: rise-card; animation-delay: 170ms; }
+footer    { animation-delay: 270ms; }
 
-/* ---------- Ambient loops ---------- */
-.float-wrap {
-  animation: float 6s var(--ease-in-out) infinite;
-  will-change: transform;
-}
-.dot { animation: pulse 4s var(--ease-in-out) infinite; }
-.dot-b { animation-duration: 5.5s; animation-delay: -2s; }
+/* ---------- Ambient loop ---------- */
 .card-glow { animation: drift 14s var(--ease-in-out) infinite alternate; }
 
 /* ---------- Reduced motion ---------- */
